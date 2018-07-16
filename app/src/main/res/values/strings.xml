@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Groups</string>
+
+    <string name="exit_msg">再按一次退出应用</string>
+</resources>
