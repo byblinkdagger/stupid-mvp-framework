@@ -6,4 +6,8 @@
 
     <color name="white">#FFF</color>
     <color name="lightPink">#FB8586</color>
+    <color name="blue_button_nor">#2f9bfc</color>
+    <color name="blue_button_pre">#295998</color>
+    <color name="bottom_text_color">#CA9F75</color>
+    <color name="nomal_text">#7B7B7B</color>
 </resources>

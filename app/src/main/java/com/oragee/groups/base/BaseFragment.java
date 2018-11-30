@@ -10,7 +10,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
+import com.oragee.groups.R;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.RxLifecycle;
@@ -31,15 +34,17 @@ public abstract class BaseFragment<T extends IP> extends Fragment implements Lif
 
     private final BehaviorSubject<FragmentEvent> mLifecycleSubject = BehaviorSubject.create();
     protected T mP;
+    protected View mRootView;
+    private ViewGroup childContainer;
+    private RelativeLayout rlErrorView;
+    private Button btnRefresh;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getLayoutResource() > 0) {
-            return inflater.inflate(getLayoutResource(), container, false);
-        } else {
-            return super.onCreateView(inflater, container, savedInstanceState);
-        }
+        mRootView = inflater.inflate(R.layout.activity_base, container, false);
+        prepareView();
+        return mRootView;
     }
 
     @Override
@@ -130,6 +135,21 @@ public abstract class BaseFragment<T extends IP> extends Fragment implements Lif
         super.onDetach();
     }
 
+    protected void prepareView() {
+        childContainer = mRootView.findViewById(R.id.bf_child_container);
+        LayoutInflater mInflater = LayoutInflater.from(getContext());
+        mInflater.inflate(getLayoutResource(), childContainer, true);
+        rlErrorView = mRootView.findViewById(R.id.error_layout);
+        btnRefresh = mRootView.findViewById(R.id.btn_refresh);
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hidErrorView();
+                initData();
+            }
+        });
+    }
+
     protected abstract int getLayoutResource();
 
     protected abstract void initViews(View view);
@@ -160,4 +180,20 @@ public abstract class BaseFragment<T extends IP> extends Fragment implements Lif
         }
     }
 
+    protected void showErrorView() {
+        if (rlErrorView.getVisibility() != View.VISIBLE) {
+            rlErrorView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hidErrorView() {
+        if (rlErrorView.getVisibility() != View.GONE) {
+            rlErrorView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onShowError() {
+        showErrorView();
+    }
 }

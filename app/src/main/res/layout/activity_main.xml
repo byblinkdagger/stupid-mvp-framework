@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="#FFF"
     tools:context="com.oragee.groups.ui.main.MainActivity">
@@ -15,41 +15,14 @@
         android:id="@+id/fl_main_content">
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/main_bottom_tab"
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_Nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/dp_12"
-        android:orientation="horizontal"
-        android:background="@drawable/icon_tab_bg">
-        <ImageView
-            android:id="@+id/tab_home"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/home_selected"/>
-        <ImageView
-            android:id="@+id/tab_submit"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/home_selected"/>
-        <ImageView
-            android:id="@+id/tab_order"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/home_selected"/>
-        <ImageView
-            android:id="@+id/tab_mine"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/home_selected"/>
-    </LinearLayout>
+        android:background="@color/white"
+        app:menu="@menu/main_menu"
+        app:itemTextColor="@drawable/color_state_menu_nav"
+        android:layout_height="@dimen/dp_45">
+    </android.support.design.widget.BottomNavigationView>
 
 </LinearLayout>

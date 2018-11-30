@@ -18,4 +18,6 @@ public interface IFV extends LifecycleProvider<FragmentEvent> {
     void showSimpleLoading(String msg);
 
     void endSimpleLoading();
+
+    void onShowError();
 }

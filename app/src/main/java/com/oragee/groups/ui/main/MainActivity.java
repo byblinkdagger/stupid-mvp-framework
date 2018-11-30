@@ -1,8 +1,12 @@
 package com.oragee.groups.ui.main;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,6 +18,7 @@ import com.oragee.groups.event.LoginEvent;
 import com.oragee.groups.ui.home.HomeFragment;
 import com.oragee.groups.ui.mine.MineFragment;
 import com.oragee.groups.ui.order.OrderFragment;
+import com.oragee.groups.util.BottomNavigationViewHelper;
 import com.oragee.groups.util.PreferencesUtils;
 import com.oragee.groups.util.SnackBarUtils;
 
@@ -29,19 +34,8 @@ public class MainActivity extends BaseActivity<MainP> implements MainContract.V 
 
     @BindView(R.id.fl_main_content)
     FrameLayout flMainContent;
-    @BindView(R.id.tab_home)
-    ImageView tabHome;
-    @BindView(R.id.tab_submit)
-    ImageView tabSubmit;
-    @BindView(R.id.tab_order)
-    ImageView tabOrder;
-    @BindView(R.id.tab_mine)
-    ImageView tabMine;
-
-    ImageView[] tabImgs;
-    BaseFragment[] contentFragment;
-    int[] imgRes = new int[]{R.drawable.home_selected, R.drawable.home_selected, R.drawable.home_selected};
-    int[] imgSelectRes = new int[]{R.drawable.home_selected, R.drawable.home_selected, R.drawable.home_selected};
+    @BindView(R.id.bottom_Nav)
+    BottomNavigationView bottomNav;
 
     //退出确认
     private long lastTime = 0;
@@ -63,33 +57,6 @@ public class MainActivity extends BaseActivity<MainP> implements MainContract.V 
 
         supportFragmentManager = getSupportFragmentManager();
 
-        HomeFragment homeFragment = (HomeFragment) supportFragmentManager.findFragmentByTag("0");
-        OrderFragment orderFragment = (OrderFragment) supportFragmentManager.findFragmentByTag("1");
-        MineFragment mineFragment = (MineFragment) supportFragmentManager.findFragmentByTag("2");
-
-        if (null == homeFragment) {
-            homeFragment = new HomeFragment();
-        }
-
-        if (null == orderFragment) {
-            orderFragment = new OrderFragment();
-        }
-
-        if (null == mineFragment) {
-            mineFragment = new MineFragment();
-        }
-
-        if (null != savedInstanceState) {
-            mIndex = savedInstanceState.getInt(SAVED_INDEX, 0);
-            tabImgs = new ImageView[]{tabHome, tabOrder, tabMine};
-            contentFragment = new BaseFragment[]{homeFragment, orderFragment, mineFragment};
-            setCurrentTab(mIndex);
-        } else {
-            tabImgs = new ImageView[]{tabHome, tabOrder, tabMine};
-            contentFragment = new BaseFragment[]{homeFragment, orderFragment, mineFragment};
-//            supportFragmentManager.beginTransaction().add(R.id.fl_main_content, contentFragment[0]).commit();
-            setCurrentTab(0);
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -107,36 +74,57 @@ public class MainActivity extends BaseActivity<MainP> implements MainContract.V 
 
     @Override
     public void initView() {
+        bottomNav = (BottomNavigationView) findViewById(R.id.bottom_Nav);
+        BottomNavigationViewHelper.disableShiftMode(bottomNav);
+        bottomNav.setItemIconTintList(null);
 
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                resetToDefaultIcon();
+                int i = item.getItemId();
+                if (i == R.id.item_home) {
+                    item.setIcon(R.mipmap.main_home_2);
+                } else if (i == R.id.item_act) {
+                    item.setIcon(R.mipmap.main_act_2);
+                } else if (i == R.id.item_text) {
+                    item.setIcon(R.mipmap.main_text_2);
+                } else if (i == R.id.item_shop) {
+                    item.setIcon(R.mipmap.main_shop_2);
+                } else {
+                    item.setIcon(R.mipmap.main_person_2);
+                }
+                return true;
+            }
+        });
+    }
+
+    private void resetToDefaultIcon() {
+        MenuItem home = bottomNav.getMenu().findItem(R.id.item_home);
+        home.setIcon(R.mipmap.main_home_1);
+        MenuItem act = bottomNav.getMenu().findItem(R.id.item_act);
+        act.setIcon(R.mipmap.main_act_1);
+        MenuItem text = bottomNav.getMenu().findItem(R.id.item_text);
+        text.setIcon(R.mipmap.main_text_1);
+        MenuItem shop = bottomNav.getMenu().findItem(R.id.item_shop);
+        shop.setIcon(R.mipmap.main_shop_1);
+        MenuItem person = bottomNav.getMenu().findItem(R.id.item_person);
+        person.setIcon(R.mipmap.main_person_1);
     }
 
     @Override
     public void initData() {
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showErrorView();
+            }
+        },20000);
     }
 
     @Override
     public void setP() {
         mP = new MainP(this);
-    }
-
-    private void setCurrentTab(int index) {
-        mIndex = index;
-        for (int i = 0; i < tabImgs.length; i++) {
-            if (i == index) {
-                tabImgs[i].setImageResource(imgSelectRes[i]);
-                if (contentFragment[i].isAdded()) {
-                    supportFragmentManager.beginTransaction().show(contentFragment[i]).commit();
-                } else {
-                    supportFragmentManager.beginTransaction().add(R.id.fl_main_content, contentFragment[i], String.valueOf(index)).commit();
-                }
-            } else {
-                tabImgs[i].setImageResource(imgRes[i]);
-                if (contentFragment[i].isAdded()) {
-                    supportFragmentManager.beginTransaction().hide(contentFragment[i]).commit();
-                }
-            }
-        }
     }
 
     @Override
@@ -147,23 +135,6 @@ public class MainActivity extends BaseActivity<MainP> implements MainContract.V 
             finish();
         }
         lastTime = System.currentTimeMillis();
-    }
-
-    @OnClick({R.id.tab_home, R.id.tab_submit, R.id.tab_order, R.id.tab_mine})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.tab_home:
-                setCurrentTab(0);
-                break;
-            case R.id.tab_submit:
-                break;
-            case R.id.tab_order:
-                setCurrentTab(1);
-                break;
-            case R.id.tab_mine:
-                setCurrentTab(2);
-                break;
-        }
     }
 
     @Override

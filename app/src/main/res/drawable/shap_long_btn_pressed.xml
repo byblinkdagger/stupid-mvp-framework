@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <corners android:radius="@dimen/dp_5" />
+    <!-- 下面左圆角的半径 -->
+    <!-- 下面右圆角的半径 -->
+    <!-- 上面左圆角的半径 -->
+    <!-- 上面右圆角的半径 -->
+
+    <solid android:color="@color/blue_button_pre" />
+    <!-- 填充的颜色 -->
+
+</shape>

@@ -6,9 +6,13 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
+import com.oragee.groups.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -22,6 +26,9 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
 
     protected T mP;
     private RxPermissions mRxPermissions;
+    private ViewGroup childContainer;
+    private RelativeLayout rlErrorView;
+    private Button btnRefresh;
 
     @Override
     public Context getContext() {
@@ -32,7 +39,9 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(getContentLayout());
+        setContentView(R.layout.activity_base);
+//        setContentView(getContentLayout());
+        prepareView();
         ButterKnife.bind(this);
 
         ActivityManager.getInstance().addActivity(this);
@@ -41,6 +50,21 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
         setP();
         initView();
         initData();
+    }
+
+    protected void prepareView() {
+        childContainer = findViewById(R.id.bf_child_container);
+        LayoutInflater mInflater = LayoutInflater.from(this);
+        mInflater.inflate(getContentLayout(), childContainer, true);
+        rlErrorView = findViewById(R.id.error_layout);
+        btnRefresh = findViewById(R.id.btn_refresh);
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hidErrorView();
+                initData();
+            }
+        });
     }
 
     @LayoutRes
@@ -66,11 +90,6 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
         }
     }
 
-    @Override
-    public View getRootView() {
-        return ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-    }
-
     private void initStatusBar() {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -81,6 +100,19 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
 //
 //        }
     }
+
+    protected void showErrorView() {
+        if (rlErrorView.getVisibility() != View.VISIBLE) {
+            rlErrorView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hidErrorView() {
+        if (rlErrorView.getVisibility() != View.GONE) {
+            rlErrorView.setVisibility(View.GONE);
+        }
+    }
+
 
     private ProgressDialog mLoadingDialog;
 
@@ -113,4 +145,8 @@ public abstract class BaseActivity<T extends IP> extends RxAppCompatActivity imp
         return mRxPermissions;
     }
 
+    @Override
+    public void onShowError() {
+        showErrorView();
+    }
 }

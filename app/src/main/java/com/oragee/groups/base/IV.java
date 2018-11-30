@@ -19,9 +19,9 @@ public interface IV extends LifecycleProvider<ActivityEvent> {
 
     Context getContext();
 
-    View getRootView();
-
     void showSimpleLoading(String msg);
 
     void endSimpleLoading();
+
+    void onShowError();
 }
