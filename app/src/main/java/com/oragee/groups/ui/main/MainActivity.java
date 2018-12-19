@@ -19,6 +19,7 @@ import com.oragee.groups.ui.home.HomeFragment;
 import com.oragee.groups.ui.mine.MineFragment;
 import com.oragee.groups.ui.order.OrderFragment;
 import com.oragee.groups.util.BottomNavigationViewHelper;
+import com.oragee.groups.util.CustToast;
 import com.oragee.groups.util.PreferencesUtils;
 import com.oragee.groups.util.SnackBarUtils;
 
@@ -56,6 +57,7 @@ public class MainActivity extends BaseActivity<MainP> implements MainContract.V 
         EventBus.getDefault().register(this);
 
         supportFragmentManager = getSupportFragmentManager();
+        CustToast.showText(this,"这是我自己的toast哦",true);
 
     }
 
